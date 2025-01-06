@@ -2,7 +2,7 @@ import './App.css';
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { addCustomer, deleteCustomer, updateCustomer } from "./CustomerSlice";
-import {addItem} from "./ItemSlice.ts";
+import {addItem, deleteSingleItem} from "./ItemSlice.ts";
 
 function App() {
     // --------------------------------customer --------------------------------------------------------
@@ -66,13 +66,22 @@ function App() {
     const [itemprice, setItemPrice] = useState('');
     const [itemqty, setQty] = useState('');
 
+    const [deleteItem,setDeleteItem] = useState('');
+
     function handleItemSubmit(){
         dispatch(addItem({itemname, itemprice, itemqty}));
         setItemname('');
         setItemPrice('');
         setQty('');
     }
-
+    function handleItemDelete(){
+        if (!deleteItem) {
+            alert('Please enter an item name to delete.');
+            return;
+        }
+        dispatch(deleteSingleItem(deleteItem));
+        setDeleteEmail('');
+    }
 
 
     return (
@@ -141,8 +150,9 @@ function App() {
                     </li>
                 ))}
             </ul>
-
-
+            <input type="text" placeholder="Enter the item name" value={deleteItem} onChange={(e) => setDeleteItem(e.target.value)}/>
+            <br/>
+            <button onClick={handleItemDelete}>Delete</button>
         </>
     );
 }

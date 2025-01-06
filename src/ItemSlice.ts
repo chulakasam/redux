@@ -8,9 +8,12 @@ const initialState = [];
         reducers:
             {
                 addItem: (state, action) => {
-                state.push(action.payload);
-            }
+                    state.push(action.payload);
+                },
+                deleteSingleItem: (state, action) => {
+                    return state.filter((item) => item.itemname !== action.payload);
+                }
         },
     });
-export const {addItem} = ItemrSlice.actions;
+export const {addItem,deleteSingleItem} = ItemrSlice.actions;
 export default ItemrSlice.reducer;
