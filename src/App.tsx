@@ -2,7 +2,7 @@ import './App.css';
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { addCustomer, deleteCustomer, updateCustomer } from "./CustomerSlice";
-import {addItem, deleteSingleItem} from "./ItemSlice.ts";
+import {addItem, deleteSingleItem, updateItem} from "./ItemSlice.ts";
 
 function App() {
     // --------------------------------customer --------------------------------------------------------
@@ -67,6 +67,10 @@ function App() {
     const [itemqty, setQty] = useState('');
 
     const [deleteItem,setDeleteItem] = useState('');
+    const [searchItemName, setSearchItemName] = useState('');
+    const [foundItem, setFoundItem] = useState<any | null>(null);
+    const [newItemQty, setNewItemQty] = useState('');
+    const [newItemPrice, setNewItemPrice] = useState('');
 
     function handleItemSubmit(){
         dispatch(addItem({itemname, itemprice, itemqty}));
@@ -83,6 +87,30 @@ function App() {
         setDeleteEmail('');
     }
 
+    function searchItem() {
+        const foundItem = item.find((c: any) => c.itemname === searchItemName);
+        if (foundItem) {
+            setFoundItem(foundItem);
+            setNewItemQty(foundItem.itemqty);
+            setNewItemPrice(foundItem.itemprice);
+        } else {
+            alert('Item not foundItem.');
+            setFoundItem(null);
+        }
+    }
+
+    function handleUpdateItem() {
+        if (foundItem) {
+            dispatch(updateItem({ itemname: foundItem.itemname, newItemQty, newItemPrice }));
+            alert('Item updated successfully.');
+            setFoundItem(null);
+            setNewItemQty('');
+            setNewItemPrice('');
+            setSearchItemName('');
+        } else {
+            alert('No Item selected for update.');
+        }
+    }
 
     return (
         <>
@@ -140,7 +168,7 @@ function App() {
                    onChange={(e) => setItemPrice(e.target.value)}/>
             <input type="text" placeholder="Item Qty" value={itemqty} onChange={(e) => setQty(e.target.value)}/>
             <br/>
-            <button onClick={handleItemSubmit}>Submit</button>
+            <button onClick={handleItemSubmit}>Submit Item</button>
             <br/>
 
             <ul>
@@ -150,9 +178,31 @@ function App() {
                     </li>
                 ))}
             </ul>
-            <input type="text" placeholder="Enter the item name" value={deleteItem} onChange={(e) => setDeleteItem(e.target.value)}/>
+            <input type="text" placeholder="Enter the item name" value={deleteItem}
+                   onChange={(e) => setDeleteItem(e.target.value)}/>
             <br/>
             <button onClick={handleItemDelete}>Delete</button>
+            <br/>
+            <input type="text" placeholder="Email to search" value={searchItemName} onChange={(e) => setSearchItemName(e.target.value)}/>
+            <button onClick={searchItem}>Search Item</button>
+
+            {foundItem && (
+                <div>
+                    <h3>Update Item:</h3>
+                    <p>
+                        <strong>Current Price:</strong> {foundItem.itemprice}
+                        <br/>
+                        <strong>Current Qty:</strong> {foundItem.itemqty}
+                    </p>
+                    <input type="text" placeholder="New price" value={newItemPrice}
+                           onChange={(e) => setNewItemPrice(e.target.value)}/>
+                    <input type="text" placeholder="New Qty" value={newItemQty}
+                           onChange={(e) => setNewItemQty(e.target.value)}/>
+                    <button onClick={handleUpdateItem}>Update Item</button>
+                </div>
+            )}
+
+
         </>
     );
 }
